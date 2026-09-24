@@ -1,0 +1,63 @@
+{% extends 'jugadoresapp/base.html' %}
+
+{% block contenido %}
+
+<div class="text-center py-5">
+    <h1 class="display-4 mb-3">
+        <i class="bi bi-trophy"></i> Administración del Club Deportivo
+    </h1>
+    
+    <p class="lead text-muted mb-4">
+        Sistema de gestión de jugadores - Registra, consulta, modifica y elimina 
+        jugadores del club de manera fácil y rápida.
+    </p>
+    
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-people-fill display-4 text-primary mb-3"></i>
+                    <h3 class="card-title">Jugadores</h3>
+                    <p class="card-text text-muted">
+                        Visualiza todos los jugadores registrados en el club.
+                    </p>
+                    <a href="{% url 'lista_jugadores' %}" class="btn btn-primary">
+                        <i class="bi bi-eye"></i> Ver lista
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-plus-fill display-4 text-success mb-3"></i>
+                    <h3 class="card-title">Registrar</h3>
+                    <p class="card-text text-muted">
+                        Agrega nuevos jugadores al equipo con todos sus datos.
+                    </p>
+                    <a href="{% url 'crear_jugador' %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Nuevo jugador
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-shield-check display-4 text-warning mb-3"></i>
+                    <h3 class="card-title">Gestionar</h3>
+                    <p class="card-text text-muted">
+                        Edita o elimina jugadores existentes del sistema.
+                    </p>
+                    <a href="{% url 'lista_jugadores' %}" class="btn btn-warning">
+                        <i class="bi bi-pencil-square"></i> Gestionar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

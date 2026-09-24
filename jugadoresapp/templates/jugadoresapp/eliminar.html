@@ -1,0 +1,38 @@
+{% extends 'jugadoresapp/base.html' %}
+
+{% block contenido %}
+
+<div class="text-center py-4">
+    <i class="bi bi-exclamation-triangle display-1 text-danger mb-3"></i>
+    
+    <h2 class="mb-3">Eliminar Jugador</h2>
+    
+    <div class="alert alert-danger d-inline-block">
+        <p class="mb-0">
+            ¿Estás seguro de eliminar a 
+            <strong>{{ jugador.nombre }} {{ jugador.apellido }}</strong>?
+        </p>
+        <p class="mb-0 mt-2">
+            <small>
+                <i class="bi bi-info-circle"></i> 
+                Esta acción no se puede deshacer.
+            </small>
+        </p>
+    </div>
+    
+    <div class="mt-4">
+        <form method="post" class="d-inline">
+            {% csrf_token %}
+            
+            <button type="submit" class="btn btn-danger me-2">
+                <i class="bi bi-trash"></i> Sí, eliminar
+            </button>
+        </form>
+        
+        <a href="{% url 'lista_jugadores' %}" class="btn btn-secondary">
+            <i class="bi bi-x-circle"></i> Cancelar
+        </a>
+    </div>
+</div>
+
+{% endblock %}

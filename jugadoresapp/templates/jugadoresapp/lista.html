@@ -1,0 +1,92 @@
+{% extends 'jugadoresapp/base.html' %}
+
+{% block contenido %}
+
+<div class="mb-4">
+    <h2>
+        <i class="bi bi-people-fill"></i> Lista de Jugadores
+    </h2>
+</div>
+
+{% if jugadores %}
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th class="text-center">#</th>
+                <th>Nombre Completo</th>
+                <th class="text-center">Edad</th>
+                <th>Posición</th>
+                <th class="text-center">Camiseta</th>
+                <th class="text-center">Fecha Ingreso</th>
+                <th class="text-center">Estado</th>
+                <th class="text-center">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for jugador in jugadores %}
+            <tr>
+                <td class="text-center">
+                    <span class="badge bg-primary">{{ jugador.id }}</span>
+                </td>
+                <td>
+                    <strong>{{ jugador.nombre }} {{ jugador.apellido }}</strong>
+                </td>
+               <td class="text-center">{{ jugador.calcular_edad }} años</td>
+                <td>{{ jugador.posicion }}</td>
+                <td class="text-center">
+                    <span class="badge bg-warning text-dark">
+                        <i class="bi bi-shirt"></i> {{ jugador.numero_camiseta }}
+                    </span>
+                </td>
+                <td class="text-center">{{ jugador.fecha_ingreso }}</td>
+                <td class="text-center">
+                    {% if jugador.activo %}
+                        <span class="badge bg-success">
+                            <i class="bi bi-check-circle"></i> Activo
+                        </span>
+                    {% else %}
+                        <span class="badge bg-secondary">
+                            <i class="bi bi-x-circle"></i> Inactivo
+                        </span>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    <a class="btn btn-warning btn-sm me-1" 
+                       href="{% url 'editar_jugador' jugador.id %}"
+                       title="Editar">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                    
+                    <a class="btn btn-danger btn-sm" 
+                       href="{% url 'eliminar_jugador' jugador.id %}"
+                       title="Eliminar">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="alert alert-info mt-3">
+    <i class="bi bi-info-circle"></i> 
+    <strong>Total de jugadores:</strong> {{ jugadores.count }}
+</div>
+
+{% else %}
+
+<div class="alert alert-info text-center">
+    <i class="bi bi-inbox display-4 mb-3 d-block"></i>
+    <h4>Todavía no existen jugadores registrados</h4>
+    <p class="mb-3">Comienza agregando tu primer jugador al club.</p>
+    <a class="btn btn-success" href="{% url 'crear_jugador' %}">
+        <i class="bi bi-plus-circle"></i> Registrar primer jugador
+    </a>
+</div>
+
+{% endif %}
+
+{% endblock %}
