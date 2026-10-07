@@ -10,6 +10,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django.contrib.auth import login
+from .forms import RegistroUsuarioForm
+
 
 def inicio(request):
     return render(request, 'jugadoresapp/inicio.html')
@@ -117,3 +120,22 @@ class LogoutApiView(APIView):
         return Response({
             'mensaje': 'Sesión cerrada correctamente.'
         }, status=status.HTTP_200_OK)
+
+def registro_usuario(request):
+    if request.method == 'POST':
+        formulario = RegistroUsuarioForm(request.POST)
+
+        if formulario.is_valid():
+            usuario = formulario.save()
+
+            login(request, usuario)
+
+            return redirect('inicio')
+    else:
+        formulario = RegistroUsuarioForm()
+
+    return render(
+        request,
+        'registration/registro.html',
+        {'formulario': formulario}
+    )

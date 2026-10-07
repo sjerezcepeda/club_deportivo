@@ -2,138 +2,267 @@
 
 {% block contenido %}
 
-<div class="mb-4">
-    <h2>
-        <i class="bi bi-person-plus-fill"></i> Registrar Nuevo Jugador
-    </h2>
-    <p class="text-muted">
-        Completa el formulario con los datos del jugador.
-    </p>
+<style>
+    .jugador-card {
+        max-width: 700px;
+        margin: 40px auto;
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .jugador-form-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 18px;
+    }
+
+    .jugador-form-row label {
+        width: 190px;
+        margin-bottom: 0;
+        font-weight: 600;
+        text-align: right;
+        padding-right: 18px;
+    }
+
+    .jugador-form-row input,
+    .jugador-form-row select {
+        width: 100%;
+        height: 42px;
+        padding: 8px 12px;
+        border: 1px solid #bdbdbd;
+        border-radius: 6px;
+        box-sizing: border-box;
+    }
+
+    .jugador-form-row input:focus,
+    .jugador-form-row select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.18);
+    }
+
+    .jugador-form-row.checkbox-row {
+        align-items: center;
+    }
+
+    .jugador-form-row.checkbox-row input {
+        width: auto;
+        height: auto;
+        margin-right: 10px;
+    }
+
+    .jugador-form-row.checkbox-row label {
+        text-align: left;
+        padding-right: 0;
+        width: auto;
+    }
+
+    .jugador-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 28px;
+        margin-left: 170px;
+    }
+
+    .jugador-actions .btn {
+        min-width: 150px;
+        height: 44px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .error-campo {
+        margin-left: 190px;
+        margin-top: -12px;
+        margin-bottom: 12px;
+        color: #dc3545;
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 650px) {
+        .jugador-form-row {
+            display: block;
+        }
+
+        .jugador-form-row label {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding-right: 0;
+            margin-bottom: 6px;
+        }
+
+        .jugador-actions {
+            margin-left: 0;
+            flex-direction: column;
+        }
+
+        .jugador-actions .btn {
+            width: 100%;
+        }
+
+        .error-campo {
+            margin-left: 0;
+            margin-top: 4px;
+        }
+    }
+</style>
+
+<div class="card jugador-card">
+    <div class="card-body p-4">
+
+        <h2 class="text-center mb-2">
+            Registrar nuevo jugador
+        </h2>
+
+        <p class="text-center text-muted mb-4">
+            Completa los datos del jugador para incorporarlo al club.
+        </p>
+
+        {% if formulario.errors %}
+            <div class="alert alert-danger">
+                <strong>Revisa los datos ingresados.</strong>
+
+                <ul class="mb-0 mt-2">
+                    {% for field in formulario %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+
+                    {% for error in formulario.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="jugador-form-row">
+                <label for="id_nombre">
+                    Nombre
+                </label>
+                {{ formulario.nombre }}
+            </div>
+
+            {% if formulario.nombre.errors %}
+                <div class="error-campo">
+                    {{ formulario.nombre.errors }}
+                </div>
+            {% endif %}
+
+            <div class="jugador-form-row">
+                <label for="id_apellido">
+                    Apellido
+                </label>
+                {{ formulario.apellido }}
+            </div>
+
+            {% if formulario.apellido.errors %}
+                <div class="error-campo">
+                    {{ formulario.apellido.errors }}
+                </div>
+            {% endif %}
+
+            <div class="jugador-form-row">
+                <label for="id_fecha_nacimiento">
+                    Fecha de nacimiento
+                </label>
+                {{ formulario.fecha_nacimiento }}
+            </div>
+
+            {% if formulario.fecha_nacimiento.errors %}
+                <div class="error-campo">
+                    {{ formulario.fecha_nacimiento.errors }}
+                </div>
+            {% endif %}
+
+            <div class="jugador-form-row">
+                <label for="id_posicion">
+                    Posición
+                </label>
+                {{ formulario.posicion }}
+            </div>
+
+            {% if formulario.posicion.errors %}
+                <div class="error-campo">
+                    {{ formulario.posicion.errors }}
+                </div>
+            {% endif %}
+
+            <div class="jugador-form-row">
+                <label for="id_numero_camiseta">
+                    Número de camiseta
+                </label>
+                {{ formulario.numero_camiseta }}
+            </div>
+
+            {% if formulario.numero_camiseta.errors %}
+                <div class="error-campo">
+                    {{ formulario.numero_camiseta.errors }}
+                </div>
+            {% endif %}
+
+            <div class="jugador-form-row">
+                <label for="id_fecha_ingreso">
+                    Fecha de ingreso
+                </label>
+                {{ formulario.fecha_ingreso }}
+            </div>
+
+            {% if formulario.fecha_ingreso.errors %}
+                <div class="error-campo">
+                    {{ formulario.fecha_ingreso.errors }}
+                </div>
+            {% endif %}
+
+            <div class="jugador-form-row checkbox-row">
+                <label for="id_activo">
+                    Estado
+                </label>
+
+                {{ formulario.activo }}
+
+                <label for="id_activo">
+                    Jugador activo
+                </label>
+            </div>
+
+            <div class="jugador-actions">
+                <button type="submit" class="btn btn-success">
+                    Guardar jugador
+                </button>
+
+                <a href="{% url 'lista_jugadores' %}"
+                   class="btn btn-secondary">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+
+    </div>
 </div>
 
-{% if formulario.errors %}
-<div class="alert alert-danger">
-    <i class="bi bi-exclamation-triangle-fill"></i>
-    <strong>¡Error!</strong> Por favor corrige los siguientes problemas:
-    <ul class="mb-0 mt-2">
-        {% for field in formulario %}
-            {% for error in field.errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-        {% endfor %}
-        {% for error in formulario.non_field_errors %}
-            <li>{{ error }}</li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
+<script>
+    const camposTexto = [
+        document.getElementById('id_nombre'),
+        document.getElementById('id_apellido'),
+        document.getElementById('id_posicion')
+    ];
 
-<form method="post" class="mt-4">
-    {% csrf_token %}
-    
-    <div class="mb-3">
-        <label for="id_nombre" class="form-label">
-            <i class="bi bi-person"></i> Nombre
-        </label>
-        {{ formulario.nombre }}
-        {% if formulario.nombre.errors %}
-            <div class="text-danger small mt-1">
-                {{ formulario.nombre.errors }}
-            </div>
-        {% endif %}
-    </div>
-    
-    <div class="mb-3">
-        <label for="id_apellido" class="form-label">
-            <i class="bi bi-person"></i> Apellido
-        </label>
-        {{ formulario.apellido }}
-        {% if formulario.apellido.errors %}
-            <div class="text-danger small mt-1">
-                {{ formulario.apellido.errors }}
-            </div>
-        {% endif %}
-    </div>
-    
-    <div class="mb-3">
-    <label for="id_fecha_nacimiento" class="form-label">
-        <i class="bi bi-calendar-date"></i> Fecha de nacimiento
-    </label>
-
-    {{ formulario.fecha_nacimiento }}
-
-    <div class="form-text">
-        La edad se calcula automáticamente. Debe tener entre 18 y 40 años.
-    </div>
-
-    {% if formulario.fecha_nacimiento.errors %}
-        <div class="text-danger small mt-1">
-            {{ formulario.fecha_nacimiento.errors }}
-        </div>
-    {% endif %}
-</div>
-    <div class="mb-3">
-        <label for="id_posicion" class="form-label">
-            <i class="bi bi-geo-alt"></i> Posición
-        </label>
-        {{ formulario.posicion }}
-        {% if formulario.posicion.errors %}
-            <div class="text-danger small mt-1">
-                {{ formulario.posicion.errors }}
-            </div>
-        {% endif %}
-    </div>
-    
-    <div class="mb-3">
-        <label for="id_numero_camiseta" class="form-label">
-            <i class="bi bi-shirt"></i> Número de Camiseta
-        </label>
-        {{ formulario.numero_camiseta }}
-        {% if formulario.numero_camiseta.errors %}
-            <div class="text-danger small mt-1">
-                {{ formulario.numero_camiseta.errors }}
-            </div>
-        {% endif %}
-    </div>
-    
-    <div class="mb-3">
-        <label for="id_fecha_ingreso" class="form-label">
-            <i class="bi bi-calendar-event"></i> Fecha de Ingreso
-        </label>
-        {{ formulario.fecha_ingreso }}
-        {% if formulario.fecha_ingreso.errors %}
-            <div class="text-danger small mt-1">
-                {{ formulario.fecha_ingreso.errors }}
-            </div>
-        {% endif %}
-    </div>
-    
-    <div class="mb-3">
-        <label class="form-label">
-            <i class="bi bi-check-circle"></i> Estado
-        </label>
-        <div class="form-check form-switch">
-            {{ formulario.activo }}
-            <label class="form-check-label" for="id_activo">
-                Jugador Activo
-            </label>
-        </div>
-        {% if formulario.activo.errors %}
-            <div class="text-danger small mt-1">
-                {{ formulario.activo.errors }}
-            </div>
-        {% endif %}
-    </div>
-    
-    <div class="d-flex gap-2 mt-4">
-        <button type="submit" class="btn btn-success">
-            <i class="bi bi-check-circle"></i> Guardar Jugador
-        </button>
-        
-        <a href="{% url 'lista_jugadores' %}" class="btn btn-secondary">
-            <i class="bi bi-x-circle"></i> Cancelar
-        </a>
-    </div>
-</form>
+    camposTexto.forEach(function(campo) {
+        if (campo) {
+            campo.addEventListener('input', function() {
+                this.value = this.value.replace(
+                    /([a-záéíóúüñ])\1{2,}/gi,
+                    '$1$1'
+                );
+            });
+        }
+    });
+</script>
 
 {% endblock %}

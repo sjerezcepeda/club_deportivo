@@ -1,6 +1,8 @@
+import re
 from datetime import date
 
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from django.utils import timezone
 
 from .models import Jugador
@@ -21,6 +23,17 @@ class JugadorForm(forms.ModelForm):
         ]
 
         widgets = {
+            'nombre': forms.TextInput(
+                attrs={'maxlength': 20}
+            ),
+            'apellido': forms.TextInput(
+                attrs={'maxlength': 20}
+            ),
+            'posicion': forms.Select(
+            attrs={
+            'class': 'form-select'
+            }
+            ),
             'fecha_nacimiento': forms.DateInput(
                 attrs={'type': 'date'}
             ),
@@ -32,35 +45,55 @@ class JugadorForm(forms.ModelForm):
             )
         }
 
+    def validar_texto(self, valor, nombre_campo):
+        valor = valor.strip()
+
+        if len(valor) < 2:
+            raise forms.ValidationError(
+                nombre_campo + ' debe tener al menos 2 letras.'
+            )
+
+        if len(valor) > 20:
+            raise forms.ValidationError(
+                nombre_campo + ' no puede superar los 20 caracteres.'
+            )
+
+        if not valor.isalpha():
+            raise forms.ValidationError(
+                nombre_campo + ' solo puede contener letras.'
+            )
+
+        if re.search(r'(.)\1\1', valor, re.IGNORECASE):
+            raise forms.ValidationError(
+                nombre_campo +
+                ' no puede tener una letra repetida más de dos veces seguidas.'
+            )
+
+        return valor.title()
+
     def clean_nombre(self):
-        nombre = self.cleaned_data['nombre'].strip()
+        nombre = self.cleaned_data['nombre']
 
-        if len(nombre) < 2:
-            raise forms.ValidationError(
-                'El nombre debe tener al menos 2 letras.'
-            )
-
-        if not nombre.isalpha():
-            raise forms.ValidationError(
-                'El nombre solo puede contener letras.'
-            )
-
-        return nombre.title()
+        return self.validar_texto(
+            nombre,
+            'El nombre'
+        )
 
     def clean_apellido(self):
-        apellido = self.cleaned_data['apellido'].strip()
+        apellido = self.cleaned_data['apellido']
 
-        if len(apellido) < 2:
-            raise forms.ValidationError(
-                'El apellido debe tener al menos 2 letras.'
-            )
+        return self.validar_texto(
+            apellido,
+            'El apellido'
+        )
 
-        if not apellido.isalpha():
-            raise forms.ValidationError(
-                'El apellido solo puede contener letras.'
-            )
+    def clean_posicion(self):
+        posicion = self.cleaned_data['posicion']
 
-        return apellido.title()
+        return self.validar_texto(
+            posicion,
+            'La posición'
+        )
 
     def clean_fecha_nacimiento(self):
         fecha_nacimiento = self.cleaned_data['fecha_nacimiento']
@@ -89,19 +122,23 @@ class JugadorForm(forms.ModelForm):
     def clean_numero_camiseta(self):
         numero = self.cleaned_data['numero_camiseta']
 
-        jugador_existente = Jugador.objects.filter(
+        if numero < 1 or numero > 99:
+            raise forms.ValidationError(
+                'El número de camiseta debe estar entre 1 y 99.'
+            )
+
+        jugadores = Jugador.objects.filter(
             numero_camiseta=numero
         )
 
         if self.instance and self.instance.pk:
-            jugador_existente = jugador_existente.exclude(
+            jugadores = jugadores.exclude(
                 pk=self.instance.pk
             )
 
-        if jugador_existente.exists():
+        if jugadores.exists():
             raise forms.ValidationError(
-                'El número de camiseta ' + str(numero) +
-                ' ya está asignado a otro jugador.'
+                'El número de camiseta ya está asignado.'
             )
 
         return numero
@@ -111,7 +148,7 @@ class JugadorForm(forms.ModelForm):
 
         if fecha_ingreso > timezone.now().date():
             raise forms.ValidationError(
-                'La fecha de ingreso no puede ser en el futuro.'
+                'La fecha de ingreso no puede ser futura.'
             )
 
         return fecha_ingreso
@@ -123,19 +160,66 @@ class JugadorForm(forms.ModelForm):
         apellido = cleaned_data.get('apellido')
 
         if nombre and apellido:
-            jugador_existente = Jugador.objects.filter(
+            jugadores = Jugador.objects.filter(
                 nombre__iexact=nombre,
                 apellido__iexact=apellido
             )
 
             if self.instance and self.instance.pk:
-                jugador_existente = jugador_existente.exclude(
+                jugadores = jugadores.exclude(
                     pk=self.instance.pk
                 )
 
-            if jugador_existente.exists():
+            if jugadores.exists():
                 raise forms.ValidationError(
                     'Ya existe un jugador registrado con este nombre y apellido.'
                 )
 
         return cleaned_data
+class RegistroUsuarioForm(UserCreationForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['username'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Ejemplo: sergio_jerez',
+            'maxlength': 20
+        })
+
+        self.fields['password1'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Ingresa una contraseña',
+            'maxlength': 20
+        })
+
+        self.fields['password2'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Repite la contraseña',
+            'maxlength': 20
+        })
+
+    def clean_username(self):
+        username = self.cleaned_data['username'].strip()
+
+        if len(username) > 20:
+            raise forms.ValidationError(
+                'El nombre de usuario no puede superar los 20 caracteres.'
+            )
+
+        if re.search(r'(.)\1\1', username, re.IGNORECASE):
+            raise forms.ValidationError(
+                'El nombre de usuario no puede tener un carácter repetido más de dos veces seguidas.'
+            )
+
+        return username
+
+    def clean_password1(self):
+        password = self.cleaned_data['password1']
+
+        if len(password) > 20:
+            raise forms.ValidationError(
+                'La contraseña no puede superar los 20 caracteres.'
+            )
+
+        return password

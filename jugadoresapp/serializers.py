@@ -1,3 +1,4 @@
+import re
 from datetime import date
 
 from rest_framework import serializers
@@ -129,3 +130,28 @@ class JugadorSerializer(serializers.ModelSerializer):
                 )
 
         return datos
+    def validar_texto(self, valor, nombre_campo):
+        valor = valor.strip()
+
+        if len(valor) < 2:
+            raise serializers.ValidationError(
+                nombre_campo + ' debe tener al menos 2 letras.'
+            )
+
+        if len(valor) > 20:
+            raise serializers.ValidationError(
+                nombre_campo + ' no puede superar los 20 caracteres.'
+            )
+
+        if not valor.isalpha():
+            raise serializers.ValidationError(
+                nombre_campo + ' solo puede contener letras.'
+            )
+
+        if re.search(r'(.)\1\1', valor, re.IGNORECASE):
+            raise serializers.ValidationError(
+                nombre_campo +
+                ' no puede tener una letra repetida más de dos veces seguidas.'
+            )
+
+        return valor.title()
